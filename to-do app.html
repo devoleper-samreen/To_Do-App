@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>to-do app</title>
+	<link rel="stylesheet" type="text/css" href="to-do app.css">
+</head>
+<body>
+      <div class="container">
+      	<h1>To Do App</h1>
+      	<div class="input-div">
+             <ul id="tasklist"></ul>
+      	     <input type="text" id="taskinput" placeholder="Enter Your Task">
+      	     <button onclick="addTask()">Add</button>
+        </div>
+
+      	<div class="text"></div>
+      </div>
+
+
+
+<script type="text/javascript">
+
+    let taskInputElement = document.getElementById("taskinput");
+    let text = document.querySelector(".text");
+    const taskListElement = document.getElementById("tasklist")
+
+    const fecthTasks = async () => {
+      try{
+        const response = await fetch("http://localhost:3000/tasks");
+          const tasks = await response.json()
+
+          updateUi(tasks);
+      }
+      catch(err){
+        console.log("errr", err)
+      }
+    }
+
+    const updateUi = (tasks) => {
+      taskListElement.innerHTML = "";
+
+      tasks.forEach(task => {
+        const taskItem = document.createElement("li");
+        taskItem.textContent = task.title;
+
+
+        taskListElement.appendChild(taskItem)
+      });
+    }
+
+    const addTask = async () => {
+      const newTaskTitle = taskInputElement.value;
+      if(newTaskTitle.trim() === " ")
+      return;
+
+      try{
+        const response = await fetch("http://localhost:3000/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify( {title: newTaskTitle})
+        })
+        const newTask = await response.json();
+        taskInputElement.value=" ";
+        fecthTasks()
+      }
+      catch (err){
+        console.log("errr", err)
+      }
+    }
+
+    fecthTasks()
+ /*
+function add(){
+  if ( inputs.value == "") {
+    alert("Please Enter Task")
+  }else{
+        let newele = document.createElement("ul");
+    newele.innerHTML = `${inputs.value} <i>+</i>`;
+    text.appendChild(newele);
+    inputs.value = "";  
+    newele.querySelector("i").addEventListener("click" , remove);
+    function remove(){
+      newele.remove();
+    }
+    
+  }
+}*/
+  </script>
+ 
+  
+</body>
+</html>
